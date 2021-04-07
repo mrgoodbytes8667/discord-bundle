@@ -7,11 +7,12 @@ namespace Bytes\DiscordBundle\Tests\HttpClient;
 use Bytes\DiscordBundle\HttpClient\DiscordResponse;
 use Bytes\DiscordBundle\Tests\ClientExceptionResponseProviderTrait;
 use Bytes\DiscordBundle\Tests\CommandProviderTrait;
-use Bytes\DiscordBundle\Tests\MockHttpClient\MockJsonResponse;
+use Bytes\DiscordResponseBundle\Enums\MessageType;
+use Bytes\DiscordResponseBundle\Objects\Message;
 use Bytes\DiscordResponseBundle\Objects\PartialGuild;
 use Bytes\DiscordResponseBundle\Objects\User;
-use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -35,7 +36,10 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 trait TestDiscordResponseTrait
 {
-    use CommandProviderTrait, ClientExceptionResponseProviderTrait;
+    use CommandProviderTrait, ClientExceptionResponseProviderTrait, WebhookProviderTrait, ValidateUserTrait, TestEmptyResponseTrait {
+        TestEmptyResponseTrait::testSuccess as testDeleteWebhookMessage;
+        TestEmptyResponseTrait::testSuccessInvalidReturnCode as testDeleteWebhookMessageInvalidReturnCode;
+    }
 
     /**
      *
@@ -82,23 +86,46 @@ trait TestDiscordResponseTrait
     }
 
     /**
-     * @param $user
-     * @param $id
-     * @param $username
-     * @param $avatar
-     * @param $discriminator
-     * @param $flags
-     * @param $bot
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
      */
-    protected function validateUser($user, $id, $username, $avatar, $discriminator, $flags, $bot)
+    public function testExecuteWebhookWait()
     {
-        $this->assertInstanceOf(User::class, $user);
+        /** @var Message $message */
+        $message = $this->setupResponse('HttpClient/execute-webhook-success.json', type: Message::class)->deserialize();
 
-        $this->assertEquals($id, $user->getId());
-        $this->assertEquals($username, $user->getUsername());
-        $this->assertEquals($avatar, $user->getAvatar());
-        $this->assertEquals($discriminator, $user->getDiscriminator());
-        $this->assertEquals($flags, $user->getPublicFlags());
-        $this->assertEquals($bot, $user->getBot());
+        $this->validateWebhookMessage($message, "487682468505944112", MessageType::default(), "Hello, World!",
+            "246703651155663276", true, "453971306226180868", "Spidey Bot", null, "0000", null, 0, 1, 0, 0, false,
+            false, false, true, false, 0, "829350728622800916");
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function testExecuteWebhookNoWaitWillNotDeserialize()
+    {
+        $this->expectException(NotEncodableValueException::class);
+        $this->setupResponse(code: Response::HTTP_NO_CONTENT)->deserialize();
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function testEditWebhookMessage()
+    {
+        /** @var Message $message */
+        $message = $this->setupResponse('HttpClient/edit-webhook-message-success.json', type: Message::class)->deserialize();
+
+        $this->validateWebhookMessage($message, "487682468505944112", MessageType::default(), "Hello, World!",
+            "246703651155663276", true, "453971306226180868", "Spidey Bot", null, "0000", null, 0, 1, 0, 0, false,
+            false, false, true, true, 0, "829350728622800916");
     }
 }
