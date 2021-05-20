@@ -1,5 +1,5 @@
 # This package/repository has been renamed/moved!
-Please use [![GitHub](https://github.com/mrgoodbytes8667/discord-bundle/raw/main/repo-mrgoodbytes8667_discord--client--bundle-lightgrey.png)](https://packagist.org/packages/mrgoodbytes8667/discord-client-bundle) / [![Packagist](https://github.com/mrgoodbytes8667/discord-bundle/raw/main/package-mrgoodbytes8667_discord--client--bundle-lightgrey.png)](https://packagist.org/packages/mrgoodbytes8667/discord-client-bundle) instead!
+Please use [![GitHub](https://github.com/mrgoodbytes8667/discord-bundle/raw/main/repo-mrgoodbytes8667_discord--client--bundle-lightgrey.png)](https://github.com/mrgoodbytes8667/discord-client-bundle) / [![Packagist](https://github.com/mrgoodbytes8667/discord-bundle/raw/main/package-mrgoodbytes8667_discord--client--bundle-lightgrey.png)](https://packagist.org/packages/mrgoodbytes8667/discord-client-bundle) instead!
 
 # discord-bundle
 [![Packagist Version](https://github.com/mrgoodbytes8667/discord-bundle/raw/main/packagist.png)](https://packagist.org/packages/mrgoodbytes8667/discord-bundle)
